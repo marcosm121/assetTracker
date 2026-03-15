@@ -27,7 +27,7 @@ export default function PriceChart({ data }: Props) {
       rightPriceScale: { borderColor: '#374151' },
     })
 
-    const series = chart.addLineSeries({
+    const series = (chart as any).addLineSeries({
       color: '#3b82f6',
       lineWidth: 2,
       lineStyle: LineStyle.Solid,

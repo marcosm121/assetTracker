@@ -15,11 +15,16 @@ export class IoLAdapter implements MarketDataProvider {
   private accessToken: string | null = null
   private refreshTokenValue: string | null = null
   private expiresAt: number | null = null
+  private readonly baseUrl: string
+  private readonly onAuthChange?: (token: string, refresh: string, expiresIn: number) => void
 
   constructor(
-    private readonly baseUrl: string = 'https://api.invertironline.com',
-    private readonly onAuthChange?: (token: string, refresh: string, expiresIn: number) => void
-  ) {}
+    baseUrl: string = 'https://api.invertironline.com',
+    onAuthChange?: (token: string, refresh: string, expiresIn: number) => void
+  ) {
+    this.baseUrl = baseUrl
+    this.onAuthChange = onAuthChange
+  }
 
   // ─── Auth ────────────────────────────────────────────────────────────────
 
