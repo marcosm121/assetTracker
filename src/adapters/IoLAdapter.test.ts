@@ -11,36 +11,9 @@ describe('IoLAdapter auth', () => {
     vi.stubGlobal('fetch', vi.fn())
   })
 
-  it('login calls token endpoint with credentials', async () => {
-    const mockFetch = vi.mocked(fetch)
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({
-        access_token: 'tok123',
-        refresh_token: 'ref456',
-        expires_in: 900,
-      }),
-    } as Response)
-
-    await adapter.login('user@test.com', 'pass123')
-
-    expect(mockFetch).toHaveBeenCalledWith(
-      `${BASE_URL}/token`,
-      expect.objectContaining({
-        method: 'POST',
-        body: expect.stringContaining('grant_type=password'),
-      })
-    )
+  it('login stores api key and marks as authenticated', async () => {
+    await adapter.login('my-api-key-123')
     expect(adapter.isAuthenticated()).toBe(true)
-  })
-
-  it('login throws on bad credentials', async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-    } as Response)
-
-    await expect(adapter.login('bad', 'creds')).rejects.toThrow()
   })
 
   it('isAuthenticated returns false before login', () => {
@@ -56,11 +29,7 @@ describe('IoLAdapter market data', () => {
     vi.stubGlobal('fetch', vi.fn())
 
     // Simulate logged-in state
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ access_token: 'tok', refresh_token: 'ref', expires_in: 900 }),
-    } as Response)
-    await adapter.login('u', 'p')
+    await adapter.login('test-api-key')
   })
 
   it('getQuote calls correct endpoint and maps response', async () => {
