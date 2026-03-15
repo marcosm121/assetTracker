@@ -17,7 +17,7 @@ export interface SymbolResult {
 }
 
 export interface MarketDataProvider {
-  login(username: string, password: string): Promise<void>
+  login(apiKey: string): Promise<void>
   refreshAuth(): Promise<void>
   isAuthenticated(): boolean
   getQuote(symbol: string, market: string): Promise<Quote>
