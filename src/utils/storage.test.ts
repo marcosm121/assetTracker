@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { saveAuth, loadAuth, clearAuth, saveWatchlist, loadWatchlist, savePreferences, loadPreferences } from './storage'
-import type { WatchlistItem, VariationPeriod } from '../adapters/types'
+import type { WatchlistItem } from '../adapters/types'
 
 beforeEach(() => localStorage.clear())
 
