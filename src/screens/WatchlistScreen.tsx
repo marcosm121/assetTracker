@@ -54,11 +54,15 @@ export default function WatchlistScreen() {
       setRows([])
       return
     }
+    let cancelled = false
     setRows(items.map(i => ({ ...i, price: null, variation: null, loading: true })))
     items.forEach(async (item) => {
       const row = await loadAsset(item)
-      setRows(prev => prev.map(r => r.symbol === item.symbol && r.market === item.market ? row : r))
+      if (!cancelled) {
+        setRows(prev => prev.map(r => r.symbol === item.symbol && r.market === item.market ? row : r))
+      }
     })
+    return () => { cancelled = true }
   }, [items, variationPeriod, loadAsset])
 
   return (
