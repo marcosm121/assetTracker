@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { createChart, ColorType, LineStyle } from 'lightweight-charts'
+import { createChart, ColorType, LineStyle, LineSeries } from 'lightweight-charts'
 import type { HistoryPoint } from '../adapters/types'
 
 interface Props {
@@ -27,7 +27,7 @@ export default function PriceChart({ data }: Props) {
       rightPriceScale: { borderColor: '#374151' },
     })
 
-    const series = (chart as any).addLineSeries({
+    const series = chart.addSeries(LineSeries, {
       color: '#3b82f6',
       lineWidth: 2,
       lineStyle: LineStyle.Solid,

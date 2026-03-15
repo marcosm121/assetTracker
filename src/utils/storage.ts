@@ -22,7 +22,12 @@ export function saveAuth(auth: AuthData): void {
 
 export function loadAuth(): AuthData | null {
   const raw = localStorage.getItem(KEYS.AUTH)
-  return raw ? JSON.parse(raw) : null
+  if (!raw) return null
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return null
+  }
 }
 
 export function clearAuth(): void {
@@ -35,7 +40,12 @@ export function saveWatchlist(items: WatchlistItem[]): void {
 
 export function loadWatchlist(): WatchlistItem[] {
   const raw = localStorage.getItem(KEYS.WATCHLIST)
-  return raw ? JSON.parse(raw) : []
+  if (!raw) return []
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return []
+  }
 }
 
 export function savePreferences(prefs: Partial<Preferences>): void {
@@ -45,5 +55,10 @@ export function savePreferences(prefs: Partial<Preferences>): void {
 
 export function loadPreferences(): Preferences {
   const raw = localStorage.getItem(KEYS.PREFERENCES)
-  return raw ? JSON.parse(raw) : { variationPeriod: '1d' }
+  if (!raw) return { variationPeriod: '1d' }
+  try {
+    return JSON.parse(raw)
+  } catch {
+    return { variationPeriod: '1d' }
+  }
 }
