@@ -3,8 +3,8 @@ import VariationBadge from './VariationBadge'
 import type { DollarRates } from '../adapters/types'
 
 interface Props {
-  rates: DollarRates
-  historyRates: DollarRates
+  rates?: Partial<DollarRates>
+  historyRates?: Partial<DollarRates>
 }
 
 const LABELS: { key: keyof DollarRates; label: string }[] = [
@@ -14,14 +14,14 @@ const LABELS: { key: keyof DollarRates; label: string }[] = [
   { key: 'contadoconliqui', label: 'CCL' },
 ]
 
-export default function DollarFooter({ rates, historyRates }: Props) {
+export default function DollarFooter({ rates = {}, historyRates = {} }: Props) {
   return (
     <div className="border-t border-gray-800 bg-gray-900 px-4 py-3">
       <div className="flex gap-4 overflow-x-auto pb-1">
         {LABELS.map(({ key, label }) => {
-          const current = rates[key]
-          const reference = historyRates[key]
-          const variation = current !== null ? calcVariation(current, reference ?? undefined) : null
+          const current = rates[key] ?? null
+          const reference = historyRates[key] ?? undefined
+          const variation = current !== null ? calcVariation(current, reference) : null
           return (
             <div key={key} className="flex-shrink-0 text-center">
               <p className="text-xs text-gray-500 mb-0.5">{label}</p>
