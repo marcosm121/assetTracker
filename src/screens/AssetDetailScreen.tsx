@@ -1,100 +1,64 @@
-import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAdapter } from '../AdapterContext'
-import PriceChart from '../components/PriceChart'
-import type { HistoryPoint } from '../adapters/types'
-import { subDays, subMonths, subYears } from '../utils/dates'
+import { calcVariation } from '../utils/variation'
+import VariationBadge from '../components/VariationBadge'
+import type { VariationPeriod } from '../adapters/types'
 
-type Period = '1S' | '1M' | '3M' | '1A'
-
-const PERIODS: Period[] = ['1S', '1M', '3M', '1A']
-
-function periodToFrom(period: Period, now: Date): Date {
-  switch (period) {
-    case '1S': return subDays(now, 7)
-    case '1M': return subMonths(now, 1)
-    case '3M': return subMonths(now, 3)
-    case '1A': return subYears(now, 1)
-  }
+const PERIOD_LABELS: Record<VariationPeriod, string> = {
+  '1d': '1D',
+  '1w': '1S',
+  '1m': '1M',
+  '3m': '3M',
 }
 
 export default function AssetDetailScreen() {
-  const { market, symbol } = useParams<{ market: string; symbol: string }>()
+  const { symbol } = useParams<{ symbol: string }>()
   const navigate = useNavigate()
   const adapter = useAdapter()
-  const [period, setPeriod] = useState<Period>('1M')
-  const [history, setHistory] = useState<HistoryPoint[]>([])
-  const [price, setPrice] = useState<number | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    if (!market || !symbol) return
-    setLoading(true)
-    setError(null)
+  if (!symbol) return null
 
-    const now = new Date()
-    const from = periodToFrom(period, now)
-
-    Promise.all([
-      adapter.getQuote(symbol, market),
-      adapter.getHistory(symbol, market, from, now),
-    ])
-      .then(([quote, hist]) => {
-        setPrice(quote.price)
-        setHistory(hist)
-      })
-      .catch(() => setError('No se pudieron cargar los datos.'))
-      .finally(() => setLoading(false))
-  }, [market, symbol, period, adapter])
+  const prices = adapter.getPrices()
+  const allHistory = adapter.getAllHistoryPrices()
+  const current = prices[symbol]
 
   return (
     <div className="min-h-screen bg-gray-950 text-white max-w-lg mx-auto">
       {/* Header */}
       <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-white">←</button>
-        <div>
-          <h1 className="font-semibold">{symbol}</h1>
-          <p className="text-xs text-gray-500">{market}</p>
-        </div>
+        <h1 className="font-semibold text-lg">{symbol}</h1>
       </div>
 
-      <div className="p-4 space-y-6">
-        {/* Price */}
+      <div className="p-6 space-y-6">
+        {/* Current price */}
         <div>
-          {loading ? (
-            <div className="h-8 w-32 bg-gray-700 rounded animate-pulse" />
+          {current ? (
+            <>
+              <p className="text-3xl font-bold">${current.ars.toLocaleString('es-AR')}</p>
+              <p className="text-gray-400 text-sm mt-1">
+                u$s {current.usd.toLocaleString('es-AR', { minimumFractionDigits: 4 })}
+              </p>
+            </>
           ) : (
-            <p className="text-3xl font-bold">
-              {price !== null ? `$${price.toLocaleString('es-AR')}` : '—'}
-            </p>
+            <p className="text-gray-500">Sin datos disponibles</p>
           )}
         </div>
 
-        {/* Period tabs */}
-        <div className="flex gap-2">
-          {PERIODS.map(p => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                period === p
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-              }`}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-
-        {/* Chart */}
-        {error ? (
-          <p className="text-red-400 text-sm">{error}</p>
-        ) : loading ? (
-          <div className="h-[300px] bg-gray-800 rounded animate-pulse" />
-        ) : (
-          <PriceChart data={history} />
+        {/* Variation grid */}
+        {current && (
+          <div className="grid grid-cols-4 gap-2">
+            {(Object.entries(PERIOD_LABELS) as [VariationPeriod, string][]).map(([period, label]) => {
+              const hist = allHistory[period][symbol]
+              const variation = hist ? calcVariation(current.ars, hist.ars ?? undefined) : null
+              return (
+                <div key={period} className="bg-gray-900 rounded-xl p-3 text-center">
+                  <p className="text-xs text-gray-500 mb-1">{label}</p>
+                  <VariationBadge value={variation} />
+                </div>
+              )
+            })}
+          </div>
         )}
       </div>
     </div>
