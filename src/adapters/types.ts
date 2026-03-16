@@ -1,34 +1,38 @@
-export interface Quote {
-  symbol: string
-  market: string
-  price: number
-  timestamp: Date
+export type VariationPeriod = '1d' | '1w' | '1m' | '3m'
+
+export interface TickerPrice {
+  ars: number
+  usd: number
 }
 
-export interface HistoryPoint {
-  date: Date
-  close: number
+export interface TickerPriceHistory {
+  ars: number | null
+  usd: number | null
 }
 
-export interface SymbolResult {
-  symbol: string
-  market: string
-  label: string
-}
+export type TickerPriceMap = Record<string, TickerPrice>
+export type TickerHistoryMap = Record<string, TickerPriceHistory>
 
-export interface MarketDataProvider {
-  login(apiKey: string): Promise<void>
-  refreshAuth(): Promise<void>
-  isAuthenticated(): boolean
-  getQuote(symbol: string, market: string): Promise<Quote>
-  getHistory(symbol: string, market: string, from: Date, to: Date): Promise<HistoryPoint[]>
-  searchSymbol(query: string, country?: string): Promise<SymbolResult[]>
+export interface DollarRates {
+  oficial: number | null
+  blue: number | null
+  bolsa: number | null
+  contadoconliqui: number | null
 }
-
-export type VariationPeriod = '1d' | '1w' | '1m' | '3m' | '1y'
 
 export interface WatchlistItem {
   symbol: string
-  market: string
-  label: string
+}
+
+export interface DataProvider {
+  fetchAll(): Promise<void>
+  getPrices(): TickerPriceMap
+  getHistoryPrices(period: VariationPeriod): TickerHistoryMap
+  getAllHistoryPrices(): Record<VariationPeriod, TickerHistoryMap>
+  getWatchlist(): string[]
+  getDollarRates(): DollarRates
+  getHistoryDollarRates(period: VariationPeriod): DollarRates
+  addTicker(symbol: string): Promise<void>
+  removeTicker(symbol: string): Promise<void>
+  isReady(): boolean
 }
