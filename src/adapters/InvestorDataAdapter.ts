@@ -74,7 +74,7 @@ export class InvestorDataAdapter implements DataProvider {
       body: JSON.stringify({ symbol }),
     })
     if (!res.ok) throw new Error(`addTicker failed: ${res.status}`)
-    await this.fetchAll()
+    await this.fetchAll().catch(() => {/* retain previous cache */})
   }
 
   async removeTicker(symbol: string): Promise<void> {
@@ -84,7 +84,7 @@ export class InvestorDataAdapter implements DataProvider {
       body: JSON.stringify({ symbol }),
     })
     if (!res.ok) throw new Error(`removeTicker failed: ${res.status}`)
-    await this.fetchAll()
+    await this.fetchAll().catch(() => {/* retain previous cache */})
   }
 
   private async get<T>(path: string): Promise<T> {
