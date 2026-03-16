@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAdapter } from '../AdapterContext'
+import { usePreferencesStore } from '../stores/preferencesStore'
 import { calcVariation } from '../utils/variation'
 import VariationBadge from '../components/VariationBadge'
 import type { VariationPeriod } from '../adapters/types'
@@ -15,6 +16,7 @@ export default function AssetDetailScreen() {
   const { symbol } = useParams<{ symbol: string }>()
   const navigate = useNavigate()
   const adapter = useAdapter()
+  const { currency } = usePreferencesStore()
 
   if (!symbol) return null
 
@@ -34,12 +36,11 @@ export default function AssetDetailScreen() {
         {/* Current price */}
         <div>
           {current ? (
-            <>
-              <p className="text-3xl font-bold">${current.ars.toLocaleString('es-AR')}</p>
-              <p className="text-gray-400 text-sm mt-1">
-                u$s {current.usd.toLocaleString('es-AR', { minimumFractionDigits: 4 })}
-              </p>
-            </>
+            <p className="text-3xl font-bold">
+              {currency === 'ars'
+                ? `$${current.ars.toLocaleString('es-AR')}`
+                : `u$s ${current.usd.toLocaleString('es-AR', { minimumFractionDigits: 4 })}`}
+            </p>
           ) : (
             <p className="text-gray-500">Sin datos disponibles</p>
           )}
@@ -50,7 +51,11 @@ export default function AssetDetailScreen() {
           <div className="grid grid-cols-4 gap-2">
             {(Object.entries(PERIOD_LABELS) as [VariationPeriod, string][]).map(([period, label]) => {
               const hist = allHistory[period][symbol]
-              const variation = hist ? calcVariation(current.ars, hist.ars ?? undefined) : null
+              const variation = hist
+                ? currency === 'ars'
+                  ? calcVariation(current.ars, hist.ars ?? undefined)
+                  : calcVariation(current.usd, hist.usd ?? undefined)
+                : null
               return (
                 <div key={period} className="bg-gray-900 rounded-xl p-3 text-center">
                   <p className="text-xs text-gray-500 mb-1">{label}</p>
