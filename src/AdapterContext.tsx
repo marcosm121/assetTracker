@@ -1,15 +1,12 @@
 import React, { createContext, useContext, useRef } from 'react'
-import { IoLAdapter } from './adapters/IoLAdapter'
-import type { MarketDataProvider } from './adapters/types'
-import { useAuthStore } from './stores/authStore'
+import { InvestorDataAdapter } from './adapters/InvestorDataAdapter'
+import type { DataProvider } from './adapters/types'
+import { INVESTOR_DATA_URL } from './config'
 
-const AdapterContext = createContext<MarketDataProvider | null>(null)
+const AdapterContext = createContext<DataProvider | null>(null)
 
 export function AdapterProvider({ children }: { children: React.ReactNode }) {
-  const setAuth = useAuthStore.getState().setAuth
-  const adapterRef = useRef<MarketDataProvider>(
-    new IoLAdapter(undefined, (token, refresh, expiresIn) => setAuth(token, refresh, expiresIn))
-  )
+  const adapterRef = useRef<DataProvider>(new InvestorDataAdapter(INVESTOR_DATA_URL))
   return (
     <AdapterContext.Provider value={adapterRef.current}>
       {children}
@@ -17,7 +14,7 @@ export function AdapterProvider({ children }: { children: React.ReactNode }) {
   )
 }
 
-export function useAdapter(): MarketDataProvider {
+export function useAdapter(): DataProvider {
   const ctx = useContext(AdapterContext)
   if (!ctx) throw new Error('useAdapter must be used within AdapterProvider')
   return ctx
