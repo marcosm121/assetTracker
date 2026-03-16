@@ -1,18 +1,22 @@
 import { describe, it, expectTypeOf } from 'vitest'
-import type { MarketDataProvider, Quote, HistoryPoint, SymbolResult } from './types'
+import type { DataProvider, TickerPriceMap, TickerHistoryMap, DollarRates } from './types'
 
-describe('MarketDataProvider interface', () => {
-  it('enforces correct return types', () => {
-    const mock: MarketDataProvider = {
-      login: async (_u, _p) => {},
-      refreshAuth: async () => {},
-      isAuthenticated: () => true,
-      getQuote: async (_s, _m): Promise<Quote> => ({
-        symbol: 'GGAL', market: 'bCBA', price: 100, timestamp: new Date()
+describe('DataProvider interface', () => {
+  it('enforces correct method signatures', () => {
+    const mock: DataProvider = {
+      fetchAll: async () => {},
+      getPrices: (): TickerPriceMap => ({ GGAL: { ars: 1234, usd: 0.95 } }),
+      getHistoryPrices: (): TickerHistoryMap => ({ GGAL: { ars: 1200, usd: 0.93 } }),
+      getAllHistoryPrices: () => ({
+        '1d': {}, '1w': {}, '1m': {}, '3m': {},
       }),
-      getHistory: async (_s, _m, _f, _t): Promise<HistoryPoint[]> => [],
-      searchSymbol: async (_q): Promise<SymbolResult[]> => [],
+      getWatchlist: () => ['GGAL'],
+      getDollarRates: (): DollarRates => ({ oficial: 1180, blue: 1350, bolsa: 1290, contadoconliqui: 1310 }),
+      getHistoryDollarRates: (): DollarRates => ({ oficial: 1100, blue: null, bolsa: null, contadoconliqui: null }),
+      addTicker: async (_s: string) => {},
+      removeTicker: async (_s: string) => {},
+      isReady: () => true,
     }
-    expectTypeOf(mock).toMatchTypeOf<MarketDataProvider>()
+    expectTypeOf(mock).toMatchTypeOf<DataProvider>()
   })
 })
