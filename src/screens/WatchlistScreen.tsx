@@ -38,7 +38,7 @@ export default function WatchlistScreen() {
   const histPrices = adapter.isReady() ? adapter.getHistoryPrices(variationPeriod) : {}
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white max-w-lg mx-auto flex flex-col">
+    <div className="h-screen bg-gray-950 text-white max-w-lg mx-auto flex flex-col">
       {/* Header */}
       <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-4 py-3 flex flex-col gap-2 z-10">
         {/* Row 1: title + period pills + add button */}
