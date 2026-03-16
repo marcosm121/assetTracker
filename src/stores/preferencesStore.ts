@@ -5,6 +5,8 @@ import type { VariationPeriod } from '../adapters/types'
 interface PreferencesState {
   variationPeriod: VariationPeriod
   setVariationPeriod: (period: VariationPeriod) => void
+  currency: 'ars' | 'usd'
+  setCurrency: (c: 'ars' | 'usd') => void
 }
 
 export const usePreferencesStore = create<PreferencesState>((set) => ({
@@ -14,4 +16,7 @@ export const usePreferencesStore = create<PreferencesState>((set) => ({
     savePreferences({ variationPeriod: period })
     set({ variationPeriod: period })
   },
+
+  currency: 'ars',
+  setCurrency: (c) => set({ currency: c }),
 }))
