@@ -25,6 +25,11 @@ export default function WatchlistScreen() {
   const [status, setStatus] = useState<ScreenStatus>('loading')
 
   useEffect(() => {
+    if (adapter.isReady()) {
+      setItems(adapter.getWatchlist())
+      setStatus('loaded')
+      return
+    }
     setStatus('loading')
     adapter.fetchAll()
       .then(() => {

@@ -57,6 +57,21 @@ describe('InvestorDataAdapter', () => {
       await adapter.fetchAll()
       expect(adapter.isReady()).toBe(true)
     })
+
+    it('guarantees no additional network requests are needed after becoming ready', async () => {
+      mockFetchAll()
+      await adapter.fetchAll()
+      vi.mocked(fetch).mockClear()
+
+      // Reading all data accessors should trigger zero additional fetches
+      adapter.getPrices()
+      adapter.getDollarRates()
+      adapter.getHistoryPrices('1d')
+      adapter.getHistoryDollarRates('1w')
+      adapter.getWatchlist()
+
+      expect(vi.mocked(fetch)).not.toHaveBeenCalled()
+    })
   })
 
   describe('fetchAll', () => {
