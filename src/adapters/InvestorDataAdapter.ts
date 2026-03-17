@@ -10,7 +10,7 @@ import type {
 
 const DOLLAR_KEYS = new Set(['oficial', 'blue', 'bolsa', 'contadoconliqui'])
 const PERIODS: VariationPeriod[] = ['1d', '1w', '1m', '3m']
-const DAYS_AGO: Record<VariationPeriod, number> = { '1d': 1, '1w': 7, '1m': 30, '3m': 90 }
+const DAYS_AGO: Record<Exclude<VariationPeriod, '1d'>, number> = { '1w': 7, '1m': 30, '3m': 90 }
 
 function utcDateString(daysAgo: number): string {
   const d = new Date()
@@ -55,9 +55,13 @@ export class InvestorDataAdapter implements DataProvider {
   }
 
   async fetchAll(): Promise<void> {
+    const oneDayAgo = getOneDayHistoryDaysAgo()
     const [current, ...histRaws] = await Promise.all([
       this.get<RawManyAll>('/manyall'),
-      ...PERIODS.map(p => this.get<RawHistory>(`/manyhistory/${utcDateString(DAYS_AGO[p])}`)),
+      ...PERIODS.map(p => {
+        const daysAgo = p === '1d' ? oneDayAgo : DAYS_AGO[p]
+        return this.get<RawHistory>(`/manyhistory/${utcDateString(daysAgo)}`)
+      }),
     ])
 
     this.prices = this.parseTickerPrices(current)

@@ -102,6 +102,42 @@ describe('InvestorDataAdapter', () => {
       vi.mocked(fetch).mockResolvedValue({ ok: false, status: 500 } as Response)
       await expect(adapter.fetchAll()).rejects.toThrow()
     })
+
+    it('uses 2-days-ago date for 1d period before 10:00 AM GMT-3', async () => {
+      // Simulate 09:00 AM GMT-3 = 12:00 UTC
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-17T12:00:00Z')) // 09:00 AM GMT-3
+
+      mockFetchAll()
+      await adapter.fetchAll()
+
+      const calls = vi.mocked(fetch).mock.calls.map(c => c[0] as string)
+      const historyCalls = calls.filter(url => url.includes('/manyhistory/'))
+
+      // 1d should be 2 days ago = 2026-03-15
+      expect(historyCalls).toContainEqual(expect.stringContaining('/manyhistory/2026-03-15'))
+      // 1d should NOT use 1 day ago = 2026-03-16
+      expect(historyCalls).not.toContainEqual(expect.stringContaining('/manyhistory/2026-03-16'))
+
+      vi.useRealTimers()
+    })
+
+    it('uses 1-day-ago date for 1d period after 10:00 AM GMT-3', async () => {
+      // Simulate 11:00 AM GMT-3 = 14:00 UTC
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-17T14:00:00Z')) // 11:00 AM GMT-3
+
+      mockFetchAll()
+      await adapter.fetchAll()
+
+      const calls = vi.mocked(fetch).mock.calls.map(c => c[0] as string)
+      const historyCalls = calls.filter(url => url.includes('/manyhistory/'))
+
+      // 1d should be 1 day ago = 2026-03-16
+      expect(historyCalls).toContainEqual(expect.stringContaining('/manyhistory/2026-03-16'))
+
+      vi.useRealTimers()
+    })
   })
 
   describe('getWatchlist', () => {
