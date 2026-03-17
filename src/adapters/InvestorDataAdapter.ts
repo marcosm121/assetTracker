@@ -18,6 +18,18 @@ function utcDateString(daysAgo: number): string {
   return d.toISOString().split('T')[0]
 }
 
+/**
+ * Returns how many days ago to use as the `1d` history baseline.
+ * Before 10:00 AM GMT-3 the market hasn't opened, so /manyall returns
+ * yesterday's close — comparing to yesterday's historical snapshot would
+ * give 0% variation. Use 2 days ago instead so the variation is meaningful.
+ */
+export function getOneDayHistoryDaysAgo(now: Date = new Date()): number {
+  // GMT-3 local hour = UTC hour - 3, normalized to [0, 24)
+  const localHour = ((now.getUTCHours() - 3) + 24) % 24
+  return localHour < 10 ? 2 : 1
+}
+
 type RawManyAll = Record<string, { ars: number; usd: number } | number>
 type RawHistory = Record<string, { ars: number | null; usd: number | null } | number | null>
 
