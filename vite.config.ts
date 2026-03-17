@@ -13,7 +13,7 @@ export default defineConfig({
         description: 'Seguimiento de activos financieros',
         theme_color: '#030712',
         background_color: '#030712',
-        display: 'standalone',
+        display: 'fullscreen',
         start_url: '/',
         icons: [
           { src: '/icon-192.png', sizes: '192x192', type: 'image/png' },
