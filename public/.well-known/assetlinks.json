@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.onrender.assettracker_aw15.twa",
+    "sha256_cert_fingerprints": ["C7:A3:51:C0:7B:3C:DA:BE:85:58:C8:A7:CE:AC:42:D6:3A:53:A5:A8:12:23:EE:CB:50:3F:41:4D:FD:BA:22:45"]
+  }
+}]
