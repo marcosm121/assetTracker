@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { InvestorDataAdapter } from './InvestorDataAdapter'
+import { InvestorDataAdapter, getOneDayHistoryDaysAgo } from './InvestorDataAdapter'
 
 const BASE_URL = 'http://localhost:3000'
 
@@ -101,6 +101,42 @@ describe('InvestorDataAdapter', () => {
     it('throws if /manyall returns non-ok', async () => {
       vi.mocked(fetch).mockResolvedValue({ ok: false, status: 500 } as Response)
       await expect(adapter.fetchAll()).rejects.toThrow()
+    })
+
+    it('uses 2-days-ago date for 1d period before 10:00 AM GMT-3', async () => {
+      // Simulate 09:00 AM GMT-3 = 12:00 UTC
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-17T12:00:00Z')) // 09:00 AM GMT-3
+
+      mockFetchAll()
+      await adapter.fetchAll()
+
+      const calls = vi.mocked(fetch).mock.calls.map(c => c[0] as string)
+      const historyCalls = calls.filter(url => url.includes('/manyhistory/'))
+
+      // 1d should be 2 days ago = 2026-03-15
+      expect(historyCalls).toContainEqual(expect.stringContaining('/manyhistory/2026-03-15'))
+      // 1d should NOT use 1 day ago = 2026-03-16
+      expect(historyCalls).not.toContainEqual(expect.stringContaining('/manyhistory/2026-03-16'))
+
+      vi.useRealTimers()
+    })
+
+    it('uses 1-day-ago date for 1d period after 10:00 AM GMT-3', async () => {
+      // Simulate 11:00 AM GMT-3 = 14:00 UTC
+      vi.useFakeTimers()
+      vi.setSystemTime(new Date('2026-03-17T14:00:00Z')) // 11:00 AM GMT-3
+
+      mockFetchAll()
+      await adapter.fetchAll()
+
+      const calls = vi.mocked(fetch).mock.calls.map(c => c[0] as string)
+      const historyCalls = calls.filter(url => url.includes('/manyhistory/'))
+
+      // 1d should be 1 day ago = 2026-03-16
+      expect(historyCalls).toContainEqual(expect.stringContaining('/manyhistory/2026-03-16'))
+
+      vi.useRealTimers()
     })
   })
 
@@ -241,6 +277,37 @@ describe('InvestorDataAdapter', () => {
     it('throws on non-2xx response', async () => {
       vi.mocked(fetch).mockResolvedValueOnce({ ok: false, status: 404 } as Response)
       await expect(adapter.removeTicker('FAKE')).rejects.toThrow('404')
+    })
+  })
+
+  describe('getOneDayHistoryDaysAgo', () => {
+    function makeDate(utcHour: number, utcMinute = 0): Date {
+      const d = new Date(0)
+      d.setUTCHours(utcHour, utcMinute, 0, 0)
+      return d
+    }
+
+    it('returns 2 at 09:59 AM GMT-3 (12:59 UTC) — pre-market', () => {
+      // 12:59 UTC = 09:59 GMT-3
+      expect(getOneDayHistoryDaysAgo(makeDate(12, 59))).toBe(2)
+    })
+
+    it('returns 2 at 00:00 AM GMT-3 (03:00 UTC) — midnight, pre-market', () => {
+      // 03:00 UTC = 00:00 GMT-3
+      expect(getOneDayHistoryDaysAgo(makeDate(3, 0))).toBe(2)
+    })
+
+    it('returns 1 at exactly 10:00 AM GMT-3 (13:00 UTC) — market open boundary', () => {
+      // 13:00 UTC = 10:00 GMT-3
+      expect(getOneDayHistoryDaysAgo(makeDate(13, 0))).toBe(1)
+    })
+
+    it('returns 1 at 12:00 PM GMT-3 (15:00 UTC) — during trading hours', () => {
+      expect(getOneDayHistoryDaysAgo(makeDate(15, 0))).toBe(1)
+    })
+
+    it('returns 1 at 18:00 PM GMT-3 (21:00 UTC) — after market close', () => {
+      expect(getOneDayHistoryDaysAgo(makeDate(21, 0))).toBe(1)
     })
   })
 })

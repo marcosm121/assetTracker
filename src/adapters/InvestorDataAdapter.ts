@@ -10,12 +10,24 @@ import type {
 
 const DOLLAR_KEYS = new Set(['oficial', 'blue', 'bolsa', 'contadoconliqui'])
 const PERIODS: VariationPeriod[] = ['1d', '1w', '1m', '3m']
-const DAYS_AGO: Record<VariationPeriod, number> = { '1d': 1, '1w': 7, '1m': 30, '3m': 90 }
+const DAYS_AGO: Record<Exclude<VariationPeriod, '1d'>, number> = { '1w': 7, '1m': 30, '3m': 90 }
 
 function utcDateString(daysAgo: number): string {
   const d = new Date()
   d.setUTCDate(d.getUTCDate() - daysAgo)
   return d.toISOString().split('T')[0]
+}
+
+/**
+ * Returns how many days ago to use as the `1d` history baseline.
+ * Before 10:00 AM GMT-3 the market hasn't opened, so /manyall returns
+ * yesterday's close — comparing to yesterday's historical snapshot would
+ * give 0% variation. Use 2 days ago instead so the variation is meaningful.
+ */
+export function getOneDayHistoryDaysAgo(now: Date = new Date()): number {
+  // GMT-3 local hour = UTC hour - 3, normalized to [0, 24)
+  const localHour = ((now.getUTCHours() - 3) + 24) % 24
+  return localHour < 10 ? 2 : 1
 }
 
 type RawManyAll = Record<string, { ars: number; usd: number } | number>
@@ -43,9 +55,13 @@ export class InvestorDataAdapter implements DataProvider {
   }
 
   async fetchAll(): Promise<void> {
+    const oneDayAgo = getOneDayHistoryDaysAgo()
     const [current, ...histRaws] = await Promise.all([
       this.get<RawManyAll>('/manyall'),
-      ...PERIODS.map(p => this.get<RawHistory>(`/manyhistory/${utcDateString(DAYS_AGO[p])}`)),
+      ...PERIODS.map(p => {
+        const daysAgo = p === '1d' ? oneDayAgo : DAYS_AGO[p]
+        return this.get<RawHistory>(`/manyhistory/${utcDateString(daysAgo)}`)
+      }),
     ])
 
     this.prices = this.parseTickerPrices(current)
