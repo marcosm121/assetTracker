@@ -1,0 +1,94 @@
+<h2>¿Dónde va el botón +?</h2>
+<p class="subtitle">Tres opciones para ubicar el botón de agregar ticker</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:12px 16px;background:#111827;border-radius:8px;">
+      <div style="font-size:11px;font-family:monospace;">
+        <div style="background:#1f2937;padding:6px 10px;display:flex;justify-content:space-between;border-radius:4px 4px 0 0;">
+          <span style="color:#fff;font-weight:600;font-size:11px;">Mi Watchlist</span>
+          <span style="color:#9ca3af;font-size:9px;">[1D][1S][1M][3M]</span>
+        </div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">AAPL — $1.234.567 +2.3%</div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">MSFT — $987.654 -1.1%</div>
+        <div style="height:24px;border:1px solid #374151;border-top:none;position:relative;">
+          <span style="position:absolute;right:8px;top:2px;background:#2563eb;color:#fff;border-radius:50%;width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(37,99,235,0.5);">+</span>
+        </div>
+        <div style="background:#1f2937;border:1px solid #374151;border-top:none;padding:6px 10px;border-radius:0 0 4px 4px;">
+          <div style="display:flex;gap:10px;justify-content:space-around;font-size:9px;color:#6b7280;">
+            <div style="text-align:center;"><div>Oficial</div><div style="color:#fff;">$1.050</div></div>
+            <div style="text-align:center;"><div>Blue</div><div style="color:#fff;">$1.290</div></div>
+            <div style="text-align:center;"><div>Bolsa</div><div style="color:#fff;">$1.240</div></div>
+            <div style="text-align:center;"><div>CCL</div><div style="color:#fff;">$1.260</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Botón dentro del footer, arriba de los dólares</h3>
+      <p>El + vive en el área del footer, alineado a la derecha. Los dólares siempre visibles debajo. Sin solapamiento.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:12px 16px;background:#111827;border-radius:8px;">
+      <div style="font-size:11px;font-family:monospace;">
+        <div style="background:#1f2937;padding:6px 10px;display:flex;justify-content:space-between;border-radius:4px 4px 0 0;">
+          <span style="color:#fff;font-weight:600;font-size:11px;">Mi Watchlist</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="color:#9ca3af;font-size:9px;">[1D][1S][1M][3M]</span>
+            <span style="background:#2563eb;color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;">+</span>
+          </div>
+        </div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">AAPL — $1.234.567 +2.3%</div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">MSFT — $987.654 -1.1%</div>
+        <div style="height:24px;border:1px solid #374151;border-top:none;"></div>
+        <div style="background:#1f2937;border:1px solid #374151;border-top:none;padding:6px 10px;border-radius:0 0 4px 4px;">
+          <div style="display:flex;gap:10px;justify-content:space-around;font-size:9px;color:#6b7280;">
+            <div style="text-align:center;"><div>Oficial</div><div style="color:#fff;">$1.050</div></div>
+            <div style="text-align:center;"><div>Blue</div><div style="color:#fff;">$1.290</div></div>
+            <div style="text-align:center;"><div>Bolsa</div><div style="color:#fff;">$1.240</div></div>
+            <div style="text-align:center;"><div>CCL</div><div style="color:#fff;">$1.260</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Botón en el header, junto a los períodos</h3>
+      <p>El + se mueve arriba del todo, a la derecha del selector de período. Footer limpio solo con dólares.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:12px 16px;background:#111827;border-radius:8px;">
+      <div style="font-size:11px;font-family:monospace;">
+        <div style="background:#1f2937;padding:6px 10px;display:flex;justify-content:space-between;border-radius:4px 4px 0 0;">
+          <span style="color:#fff;font-weight:600;font-size:11px;">Mi Watchlist</span>
+          <span style="color:#9ca3af;font-size:9px;">[1D][1S][1M][3M]</span>
+        </div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">AAPL — $1.234.567 +2.3%</div>
+        <div style="border:1px solid #374151;border-top:none;padding:6px 10px;color:#fff;font-size:10px;">MSFT — $987.654 -1.1%</div>
+        <div style="height:24px;border:1px solid #374151;border-top:none;"></div>
+        <div style="background:#1f2937;border:1px solid #374151;border-top:none;padding:4px 10px;border-radius:0 0 4px 4px;">
+          <div style="display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:9px;color:#6b7280;">
+            <div style="display:flex;gap:10px;">
+              <div style="text-align:center;"><div>Oficial</div><div style="color:#fff;">$1.050</div></div>
+              <div style="text-align:center;"><div>Blue</div><div style="color:#fff;">$1.290</div></div>
+              <div style="text-align:center;"><div>Bolsa</div><div style="color:#fff;">$1.240</div></div>
+              <div style="text-align:center;"><div>CCL</div><div style="color:#fff;">$1.260</div></div>
+            </div>
+            <span style="background:#2563eb;color:#fff;border-radius:50%;width:16px;height:16px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;">+</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Botón dentro del footer, a la derecha de los dólares</h3>
+      <p>El + convive en la misma fila que los dólares, al extremo derecho. Ocupa menos espacio vertical.</p>
+    </div>
+  </div>
+
+</div>
+
+<p class="subtitle" style="margin-top:8px;">Clickeá la opción que más te gusta</p>
