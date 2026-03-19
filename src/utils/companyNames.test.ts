@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { getCompanyName } from './companyNames'
 
 describe('getCompanyName', () => {

@@ -22,8 +22,9 @@ export default function DolaresScreen() {
   const adapter = useAdapter()
   const { variationPeriod, setVariationPeriod } = usePreferencesStore()
 
-  const rates = adapter.isReady() ? adapter.getDollarRates() : {}
-  const histRates = adapter.isReady() ? adapter.getHistoryDollarRates(variationPeriod) : {}
+  const emptyRates: DollarRates = { oficial: null, blue: null, bolsa: null, contadoconliqui: null }
+  const rates = adapter.isReady() ? adapter.getDollarRates() : emptyRates
+  const histRates = adapter.isReady() ? adapter.getHistoryDollarRates(variationPeriod) : emptyRates
 
   return (
     <div className="h-full flex flex-col overflow-hidden">
