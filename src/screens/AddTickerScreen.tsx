@@ -58,54 +58,54 @@ export default function AddTickerScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white max-w-lg mx-auto">
+    <div className="h-full flex flex-col overflow-hidden bg-slate-50">
       {/* Header */}
-      <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-4 py-3 flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="text-gray-400 hover:text-white">←</button>
-        <h1 className="font-semibold">Gestionar activos</h1>
+      <div className="sticky top-0 bg-white border-b border-slate-200 px-4 py-3 flex items-center gap-3">
+        <button onClick={() => navigate(-1)} className="text-slate-400 hover:text-slate-700 text-xl">←</button>
+        <h1 className="font-bold text-slate-900">Gestionar activos</h1>
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="flex-1 overflow-y-auto p-4 space-y-6">
         {/* Add form */}
         <div>
-          <p className="text-sm text-gray-400 mb-3">Agregar ticker</p>
+          <p className="text-sm text-slate-500 mb-3">Agregar ticker</p>
           <form onSubmit={handleAdd} className="flex gap-2">
             <input
               type="text"
               value={symbol}
               onChange={e => setSymbol(e.target.value.toUpperCase())}
               placeholder="Ej: GGAL"
-              className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2.5 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 bg-white border border-slate-200 text-slate-900 rounded-lg px-4 py-2.5 font-mono uppercase focus:outline-none focus:ring-2 focus:ring-blue-400"
               autoFocus
             />
             <button
               type="submit"
               disabled={addStatus.type === 'loading' || !symbol.trim()}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg px-4 py-2.5 font-medium transition-colors"
+              className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg px-4 py-2.5 font-semibold transition-colors"
             >
               {addStatus.type === 'loading' ? '...' : 'Agregar'}
             </button>
           </form>
           {addStatus.type === 'error' && (
-            <p className="text-red-400 text-sm mt-2">{addStatus.message}</p>
+            <p className="text-red-500 text-sm mt-2">{addStatus.message}</p>
           )}
         </div>
 
         {/* Current tickers */}
         {items.length > 0 && (
           <div>
-            <p className="text-sm text-gray-400 mb-3">Activos en seguimiento</p>
-            <div className="divide-y divide-gray-800 rounded-xl overflow-hidden">
+            <p className="text-sm text-slate-500 mb-3">Activos en seguimiento</p>
+            <div className="divide-y divide-slate-100 rounded-xl overflow-hidden bg-white shadow-sm">
               {items.map(sym => (
-                <div key={sym} className="bg-gray-900 flex items-center justify-between px-4 py-3">
-                  <span className="font-mono font-medium">{sym}</span>
+                <div key={sym} className="flex items-center justify-between px-4 py-3">
+                  <span className="font-mono font-semibold text-slate-900">{sym}</span>
                   <div className="text-right">
                     {removeErrors[sym] && (
-                      <p className="text-red-400 text-xs mb-1">{removeErrors[sym]}</p>
+                      <p className="text-red-500 text-xs mb-1">{removeErrors[sym]}</p>
                     )}
                     <button
                       onClick={() => handleRemove(sym)}
-                      className="text-red-400 hover:text-red-300 text-sm"
+                      className="text-red-500 hover:text-red-600 text-sm font-medium"
                     >
                       Quitar
                     </button>

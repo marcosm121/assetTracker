@@ -1,21 +1,22 @@
+// src/screens/WatchlistScreen.tsx
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAdapter } from '../AdapterContext'
 import { useWatchlistStore } from '../stores/watchlistStore'
 import { usePreferencesStore } from '../stores/preferencesStore'
 import { calcVariation } from '../utils/variation'
+import { getCompanyName } from '../utils/companyNames'
 import VariationBadge from '../components/VariationBadge'
-import DollarFooter from '../components/DollarFooter'
 import type { VariationPeriod } from '../adapters/types'
 
 type ScreenStatus = 'loading' | 'error' | 'loaded'
 
-const PERIOD_LABELS: Record<VariationPeriod, string> = {
-  '1d': '1D',
-  '1w': '1S',
-  '1m': '1M',
-  '3m': '3M',
-}
+const PERIOD_OPTIONS: { value: VariationPeriod; label: string }[] = [
+  { value: '1d', label: '1D' },
+  { value: '1w', label: '1S' },
+  { value: '1m', label: '1M' },
+  { value: '3m', label: '3M' },
+]
 
 export default function WatchlistScreen() {
   const navigate = useNavigate()
@@ -43,62 +44,60 @@ export default function WatchlistScreen() {
   const histPrices = adapter.isReady() ? adapter.getHistoryPrices(variationPeriod) : {}
 
   return (
-    <div className="h-screen bg-gray-950 text-white max-w-lg mx-auto flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
-      <div className="sticky top-0 bg-gray-950 border-b border-gray-800 px-4 py-3 flex flex-col gap-2 z-10">
-        {/* Row 1: title + period pills + add button */}
-        <div className="flex items-center justify-between">
-          <h1 className="font-semibold text-lg">Mi Watchlist</h1>
-          <div className="flex gap-1 items-center">
-            {(Object.entries(PERIOD_LABELS) as [VariationPeriod, string][]).map(([val, label]) => (
-              <button
-                key={val}
-                onClick={() => setVariationPeriod(val)}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  variationPeriod === val
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
+      <div className="sticky top-0 bg-white border-b border-slate-200 px-4 pt-3 pb-0 z-10">
+        {/* Row 1: title + ARS/USD toggle */}
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="font-bold text-lg text-slate-900">Mi Watchlist</h1>
+          <div className="flex bg-slate-100 rounded-full p-0.5">
             <button
-              onClick={() => navigate('/add')}
-              className="w-8 h-8 rounded-full bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center text-lg transition-colors"
+              onClick={() => setCurrency('usd')}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                currency === 'usd' ? 'bg-slate-800 text-white' : 'text-slate-400'
+              }`}
             >
-              +
+              USD
+            </button>
+            <button
+              onClick={() => setCurrency('ars')}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                currency === 'ars' ? 'bg-slate-800 text-white' : 'text-slate-400'
+              }`}
+            >
+              ARS
             </button>
           </div>
         </div>
-        {/* Row 2: ARS/USD switch */}
-        <div className="flex justify-center">
-          <div className="flex bg-gray-800 rounded-full p-0.5">
+        {/* Row 2: period pills + add button */}
+        <div className="flex items-center gap-1 pb-3">
+          {PERIOD_OPTIONS.map(({ value, label }) => (
             <button
-              onClick={() => setCurrency('ars')}
-              className={`px-4 py-1 rounded-full text-xs font-medium transition-colors ${
-                currency === 'ars' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
+              key={value}
+              onClick={() => setVariationPeriod(value)}
+              className={`px-3 py-1 rounded-full text-xs font-semibold transition-colors ${
+                variationPeriod === value
+                  ? 'bg-slate-800 text-white'
+                  : 'text-slate-400 hover:text-slate-600'
               }`}
             >
-              ARS $
+              {label}
             </button>
-            <button
-              onClick={() => setCurrency('usd')}
-              className={`px-4 py-1 rounded-full text-xs font-medium transition-colors ${
-                currency === 'usd' ? 'bg-blue-600 text-white' : 'text-gray-400 hover:text-white'
-              }`}
-            >
-              USD u$s
-            </button>
-          </div>
+          ))}
+          <button
+            onClick={() => navigate('/add')}
+            className="ml-auto w-7 h-7 rounded-full bg-blue-500 hover:bg-blue-600 text-white flex items-center justify-center text-lg font-bold transition-colors"
+          >
+            +
+          </button>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex-1 divide-y divide-gray-800 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto p-3 flex flex-col gap-3">
         {status === 'error' && (
-          <div className="p-6 text-center">
-            <p className="text-red-400 text-sm mb-3">No se pudieron cargar los datos.</p>
+          <div className="text-center py-12">
+            <p className="text-red-500 text-sm mb-3">No se pudieron cargar los datos.</p>
             <button
               onClick={() => {
                 setStatus('loading')
@@ -106,7 +105,7 @@ export default function WatchlistScreen() {
                   .then(() => { setItems(adapter.getWatchlist()); setStatus('loaded') })
                   .catch(() => setStatus('error'))
               }}
-              className="bg-gray-800 hover:bg-gray-700 text-white text-sm px-4 py-2 rounded-lg"
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm px-4 py-2 rounded-lg"
             >
               Reintentar
             </button>
@@ -114,7 +113,7 @@ export default function WatchlistScreen() {
         )}
 
         {status === 'loading' && items.length === 0 && (
-          <p className="text-gray-500 text-center py-16 text-sm">Cargando...</p>
+          <p className="text-slate-400 text-center py-16 text-sm">Cargando...</p>
         )}
 
         {(status === 'loading' && items.length > 0 ? items : status === 'loaded' ? items : []).map(symbol => {
@@ -126,22 +125,35 @@ export default function WatchlistScreen() {
               ? calcVariation(current.ars, hist.ars ?? undefined)
               : calcVariation(current.usd, hist.usd ?? undefined)
             : null
+          const companyName = getCompanyName(symbol)
 
           return (
             <button
               key={symbol}
               onClick={() => navigate(`/asset/${symbol}`)}
-              className="w-full flex items-center justify-between px-4 py-4 hover:bg-gray-900 transition-colors text-left"
+              className="bg-white rounded-xl shadow-sm px-4 py-3 flex items-center gap-3 text-left hover:shadow-md transition-shadow w-full"
             >
-              <div>
-                <p className="font-medium">{symbol}</p>
+              {/* Avatar */}
+              <div
+                className="w-9 h-9 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0"
+                style={{ background: '#dde3f5', color: '#4a5fa0' }}
+              >
+                {symbol[0]}
               </div>
-              <div className="text-right">
+              {/* Name */}
+              <div className="flex-1 min-w-0">
+                <p className="font-bold text-slate-900">{symbol}</p>
+                {companyName && (
+                  <p className="text-xs text-slate-400 truncate">{companyName}</p>
+                )}
+              </div>
+              {/* Price + variation */}
+              <div className="text-right flex-shrink-0">
                 {isLoading ? (
-                  <div className="h-4 w-20 bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-slate-100 rounded animate-pulse" />
                 ) : (
                   <>
-                    <p className="font-medium text-sm">
+                    <p className="font-bold text-slate-900 text-sm">
                       {current
                         ? currency === 'ars'
                           ? `$${current.ars.toLocaleString('es-AR')}`
@@ -157,17 +169,11 @@ export default function WatchlistScreen() {
         })}
 
         {status === 'loaded' && items.length === 0 && (
-          <p className="text-gray-500 text-center py-16 text-sm">
+          <p className="text-slate-400 text-center py-16 text-sm">
             Tu watchlist está vacía.<br />Tocá + para agregar activos.
           </p>
         )}
       </div>
-
-      {/* Dollar footer — always visible */}
-      <DollarFooter
-        rates={adapter.isReady() ? adapter.getDollarRates() : undefined}
-        historyRates={adapter.isReady() ? adapter.getHistoryDollarRates(variationPeriod) : undefined}
-      />
     </div>
   )
 }
