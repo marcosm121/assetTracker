@@ -4,10 +4,13 @@ import { useAdapter } from '../AdapterContext'
 import type { NewsItem } from '../adapters/types'
 import { CATEGORY_LABELS, CATEGORY_COLORS, relativeTime } from '../utils/newsDisplay'
 
-function NewsCard({ item, index, onPress }: { item: NewsItem; index: number; onPress: (i: number) => void }) {
+function NewsCard({ item, onPress }: { item: NewsItem; onPress: () => void }) {
   return (
     <div
-      onClick={() => onPress(index)}
+      role="button"
+      tabIndex={0}
+      onClick={onPress}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPress() }}
       className="block bg-white rounded-xl px-4 py-3 shadow-sm border border-slate-100 active:bg-slate-50 cursor-pointer"
     >
       <p className="text-sm font-semibold text-slate-900 leading-snug mb-2">
@@ -78,8 +81,7 @@ export default function NoticiasScreen() {
           <NewsCard
             key={item.url}
             item={item}
-            index={i}
-            onPress={(idx) => navigate(`/noticias/${idx}`)}
+            onPress={() => navigate(`/noticias/${i}`)}
           />
         ))}
       </div>
