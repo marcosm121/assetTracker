@@ -28,6 +28,7 @@ export interface NewsItem {
   source: string
   publishedAt: string   // ISO 8601
   category: NewsCategory
+  summary?: string      // markdown, optional
 }
 
 export interface WatchlistItem {

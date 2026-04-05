@@ -287,6 +287,7 @@ describe('InvestorDataAdapter', () => {
       source: 'Infobae',
       publishedAt: '2026-04-04T13:45:00Z',
       category: 'watchlist',
+      summary: '### Resumen\nYPF cerró un acuerdo importante.',
     },
     {
       title: 'Fed mantiene tasas',
@@ -323,6 +324,7 @@ describe('InvestorDataAdapter', () => {
       expect(news[0].publishedAt).toBe('2026-04-04T15:00:00Z')  // most recent first
       expect(news[1].publishedAt).toBe('2026-04-04T13:45:00Z')
       expect(news[2].publishedAt).toBe('2026-04-04T11:20:00Z')
+      expect(news[1].summary).toBe('### Resumen\nYPF cerró un acuerdo importante.')
     })
 
     it('does not re-fetch if news already loaded', async () => {
