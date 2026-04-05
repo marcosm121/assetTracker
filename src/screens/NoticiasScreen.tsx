@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAdapter } from '../AdapterContext'
 import type { NewsItem } from '../adapters/types'
 import { CATEGORY_LABELS, CATEGORY_COLORS, relativeTime } from '../utils/newsDisplay'
 
-function NewsCard({ item }: { item: NewsItem }) {
+function NewsCard({ item, index, onPress }: { item: NewsItem; index: number; onPress: (i: number) => void }) {
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block bg-white rounded-xl px-4 py-3 shadow-sm border border-slate-100 active:bg-slate-50"
+    <div
+      onClick={() => onPress(index)}
+      className="block bg-white rounded-xl px-4 py-3 shadow-sm border border-slate-100 active:bg-slate-50 cursor-pointer"
     >
       <p className="text-sm font-semibold text-slate-900 leading-snug mb-2">
         {item.title}
@@ -22,7 +21,7 @@ function NewsCard({ item }: { item: NewsItem }) {
         <span className="text-xs text-slate-300">·</span>
         <span className="text-xs text-slate-400">{relativeTime(item.publishedAt)}</span>
       </div>
-    </a>
+    </div>
   )
 }
 
@@ -30,6 +29,7 @@ type ScreenState = 'loading' | 'error' | 'loaded'
 
 export default function NoticiasScreen() {
   const adapter = useAdapter()
+  const navigate = useNavigate()
   const [state, setState] = useState<ScreenState>(
     adapter.getNews().length > 0 ? 'loaded' : 'loading'
   )
@@ -74,8 +74,13 @@ export default function NoticiasScreen() {
     <div className="h-full overflow-y-auto">
       <div className="px-4 pt-4 pb-24 flex flex-col gap-3">
         <h1 className="text-lg font-bold text-slate-900 mb-1">Noticias</h1>
-        {news.map((item) => (
-          <NewsCard key={item.url} item={item} />
+        {news.map((item, i) => (
+          <NewsCard
+            key={item.url}
+            item={item}
+            index={i}
+            onPress={(idx) => navigate(`/noticias/${idx}`)}
+          />
         ))}
       </div>
     </div>
