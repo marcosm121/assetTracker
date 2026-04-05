@@ -20,6 +20,16 @@ export interface DollarRates {
   contadoconliqui: number | null
 }
 
+export type NewsCategory = 'global' | 'argentina' | 'geopolitics' | 'watchlist'
+
+export interface NewsItem {
+  title: string
+  url: string
+  source: string
+  publishedAt: string   // ISO 8601
+  category: NewsCategory
+}
+
 export interface WatchlistItem {
   symbol: string
 }
@@ -34,5 +44,7 @@ export interface DataProvider {
   getHistoryDollarRates(period: VariationPeriod): DollarRates
   addTicker(symbol: string): Promise<void>
   removeTicker(symbol: string): Promise<void>
+  fetchNews(): Promise<void>
+  getNews(): NewsItem[]
   isReady(): boolean
 }

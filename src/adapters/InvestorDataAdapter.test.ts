@@ -280,6 +280,74 @@ describe('InvestorDataAdapter', () => {
     })
   })
 
+  const NEWS_RESPONSE = [
+    {
+      title: 'YPF cierra acuerdo con Shell',
+      url: 'https://example.com/ypf',
+      source: 'Infobae',
+      publishedAt: '2026-04-04T13:45:00Z',
+      category: 'watchlist',
+    },
+    {
+      title: 'Fed mantiene tasas',
+      url: 'https://example.com/fed',
+      source: 'Reuters',
+      publishedAt: '2026-04-04T11:20:00Z',
+      category: 'global',
+    },
+    {
+      title: 'Noticia más reciente',
+      url: 'https://example.com/recent',
+      source: 'Ambito',
+      publishedAt: '2026-04-04T15:00:00Z',
+      category: 'argentina',
+    },
+  ]
+
+  describe('fetchNews / getNews', () => {
+    it('returns empty array before fetchNews', () => {
+      expect(adapter.getNews()).toEqual([])
+    })
+
+    it('fetches GET /news and stores sorted by publishedAt desc', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        json: async () => NEWS_RESPONSE,
+      } as Response)
+
+      await adapter.fetchNews()
+
+      expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/news`)
+      const news = adapter.getNews()
+      expect(news).toHaveLength(3)
+      expect(news[0].publishedAt).toBe('2026-04-04T15:00:00Z')  // most recent first
+      expect(news[1].publishedAt).toBe('2026-04-04T13:45:00Z')
+      expect(news[2].publishedAt).toBe('2026-04-04T11:20:00Z')
+    })
+
+    it('does not re-fetch if news already loaded', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        json: async () => NEWS_RESPONSE,
+      } as Response)
+
+      await adapter.fetchNews()
+      await adapter.fetchNews()  // second call — should NOT call fetch again
+
+      expect(fetch).toHaveBeenCalledTimes(1)
+    })
+
+    it('throws and leaves cache empty on network error', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: false,
+        status: 500,
+      } as Response)
+
+      await expect(adapter.fetchNews()).rejects.toThrow('GET /news failed: 500')
+      expect(adapter.getNews()).toEqual([])
+    })
+  })
+
   describe('getOneDayHistoryDaysAgo', () => {
     function makeDate(utcHour: number, utcMinute = 0): Date {
       const d = new Date(0)
