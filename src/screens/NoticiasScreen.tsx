@@ -57,6 +57,7 @@ export default function NoticiasScreen() {
       <div className="h-full flex flex-col items-center justify-center gap-3 px-8 text-center">
         <p className="text-slate-500 text-sm">No se pudieron cargar las noticias.</p>
         <button
+          type="button"
           onClick={() => {
             setState('loading')
             adapter.fetchNews()
