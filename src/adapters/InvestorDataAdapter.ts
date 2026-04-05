@@ -6,6 +6,7 @@ import type {
   TickerPriceHistory,
   DollarRates,
   VariationPeriod,
+  NewsItem,
 } from './types'
 
 const DOLLAR_KEYS = new Set(['oficial', 'blue', 'bolsa', 'contadoconliqui'])
@@ -48,6 +49,7 @@ export class InvestorDataAdapter implements DataProvider {
     '3m': emptyDollarRates(),
   }
   private ready = false
+  private news: NewsItem[] = []
   private readonly baseUrl: string
 
   constructor(baseUrl: string = 'http://localhost:3000') {
@@ -82,6 +84,16 @@ export class InvestorDataAdapter implements DataProvider {
   getDollarRates(): DollarRates { return this.dollarRates }
   getHistoryDollarRates(period: VariationPeriod): DollarRates { return this.historyDollar[period] }
   isReady(): boolean { return this.ready }
+
+  async fetchNews(): Promise<void> {
+    if (this.news.length > 0) return
+    const items = await this.get<NewsItem[]>('/news')
+    this.news = items.sort(
+      (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
+    )
+  }
+
+  getNews(): NewsItem[] { return this.news }
 
   async addTicker(symbol: string): Promise<void> {
     const res = await fetch(`${this.baseUrl}/add`, {

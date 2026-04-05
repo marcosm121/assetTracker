@@ -16,6 +16,8 @@ describe('DataProvider interface', () => {
       addTicker: async (_s: string) => {},
       removeTicker: async (_s: string) => {},
       isReady: () => true,
+      fetchNews: async () => {},
+      getNews: () => [],
     }
     expectTypeOf(mock).toMatchTypeOf<DataProvider>()
   })
