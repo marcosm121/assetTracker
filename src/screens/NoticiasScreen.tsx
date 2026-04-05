@@ -96,8 +96,8 @@ export default function NoticiasScreen() {
     <div className="h-full overflow-y-auto">
       <div className="px-4 pt-4 pb-24 flex flex-col gap-3">
         <h1 className="text-lg font-bold text-slate-900 mb-1">Noticias</h1>
-        {news.map((item, i) => (
-          <NewsCard key={i} item={item} />
+        {news.map((item) => (
+          <NewsCard key={item.url} item={item} />
         ))}
       </div>
     </div>
