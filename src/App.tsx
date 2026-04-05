@@ -5,6 +5,7 @@ import AssetDetailScreen from './screens/AssetDetailScreen'
 import AddTickerScreen from './screens/AddTickerScreen'
 import DolaresScreen from './screens/DolaresScreen'
 import NoticiasScreen from './screens/NoticiasScreen'
+import NoticiaDetailScreen from './screens/NoticiaDetailScreen'
 import BottomNav from './components/BottomNav'
 
 export default function App() {
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/add" element={<AddTickerScreen />} />
             <Route path="/dolares" element={<DolaresScreen />} />
             <Route path="/noticias" element={<NoticiasScreen />} />
+            <Route path="/noticias/:index" element={<NoticiaDetailScreen />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>

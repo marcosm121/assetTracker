@@ -1,37 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAdapter } from '../AdapterContext'
-import type { NewsItem, NewsCategory } from '../adapters/types'
+import type { NewsItem } from '../adapters/types'
+import { CATEGORY_LABELS, CATEGORY_COLORS, relativeTime } from '../utils/newsDisplay'
 
-const CATEGORY_LABELS: Record<NewsCategory, string> = {
-  argentina: 'Argentina',
-  global: 'Global',
-  geopolitics: 'Geopolítica',
-  watchlist: 'Watchlist',
-}
-
-const CATEGORY_COLORS: Record<NewsCategory, string> = {
-  argentina: 'bg-blue-100 text-blue-700',
-  global: 'bg-green-100 text-green-700',
-  geopolitics: 'bg-orange-100 text-orange-700',
-  watchlist: 'bg-purple-100 text-purple-700',
-}
-
-function relativeTime(iso: string): string {
-  const diffMs = Date.now() - new Date(iso).getTime()
-  const diffMin = Math.floor(diffMs / 60_000)
-  if (diffMin < 60) return `hace ${diffMin}m`
-  const diffHours = Math.floor(diffMin / 60)
-  if (diffHours < 24) return `hace ${diffHours}h`
-  return `hace ${Math.floor(diffHours / 24)}d`
-}
-
-function NewsCard({ item }: { item: NewsItem }) {
+function NewsCard({ item, onPress }: { item: NewsItem; onPress: () => void }) {
   return (
-    <a
-      href={item.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block bg-white rounded-xl px-4 py-3 shadow-sm border border-slate-100 active:bg-slate-50"
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onPress}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') onPress() }}
+      className="block bg-white rounded-xl px-4 py-3 shadow-sm border border-slate-100 active:bg-slate-50 cursor-pointer"
     >
       <p className="text-sm font-semibold text-slate-900 leading-snug mb-2">
         {item.title}
@@ -44,7 +24,7 @@ function NewsCard({ item }: { item: NewsItem }) {
         <span className="text-xs text-slate-300">·</span>
         <span className="text-xs text-slate-400">{relativeTime(item.publishedAt)}</span>
       </div>
-    </a>
+    </div>
   )
 }
 
@@ -52,6 +32,7 @@ type ScreenState = 'loading' | 'error' | 'loaded'
 
 export default function NoticiasScreen() {
   const adapter = useAdapter()
+  const navigate = useNavigate()
   const [state, setState] = useState<ScreenState>(
     adapter.getNews().length > 0 ? 'loaded' : 'loading'
   )
@@ -76,6 +57,7 @@ export default function NoticiasScreen() {
       <div className="h-full flex flex-col items-center justify-center gap-3 px-8 text-center">
         <p className="text-slate-500 text-sm">No se pudieron cargar las noticias.</p>
         <button
+          type="button"
           onClick={() => {
             setState('loading')
             adapter.fetchNews()
@@ -96,8 +78,12 @@ export default function NoticiasScreen() {
     <div className="h-full overflow-y-auto">
       <div className="px-4 pt-4 pb-24 flex flex-col gap-3">
         <h1 className="text-lg font-bold text-slate-900 mb-1">Noticias</h1>
-        {news.map((item) => (
-          <NewsCard key={item.url} item={item} />
+        {news.map((item, i) => (
+          <NewsCard
+            key={item.url}
+            item={item}
+            onPress={() => navigate(`/noticias/${i}`)}
+          />
         ))}
       </div>
     </div>
