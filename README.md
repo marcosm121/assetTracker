@@ -1,73 +1,34 @@
-# React + TypeScript + Vite
+# Assets Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web para seguimiento de activos financieros del mercado argentino. Muestra precios en ARS y USD, variaciones por período, cotizaciones del dólar y noticias del mercado.
 
-Currently, two official plugins are available:
+![Assets Tracker - Watchlist](public/main-screen.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Funcionalidades
 
-## React Compiler
+- **Watchlist** — lista de activos con precio actual en ARS/USD y variación configurable (1D, 1S, 1M, 3M)
+- **Detalle de activo** — precio actual y grilla de variaciones por los cuatro períodos
+- **Dólares** — cotizaciones oficial, blue, bolsa y CCL con variación histórica
+- **Noticias** — feed de noticias del mercado con resumen en markdown por nota
+- **Agregar/quitar tickers** — alta y baja de activos en tiempo real
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías
 
-## Expanding the ESLint configuration
+- React + TypeScript + Vite
+- Zustand (estado global)
+- React Router
+- Vitest (tests unitarios)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Requisitos
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Requiere el backend [investorData](https://github.com/marcosm121/investorData) corriendo en `http://localhost:3000` (o configurar `VITE_INVESTOR_DATA_URL` en `.env`).
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Desarrollo
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev       # servidor de desarrollo con hot reload
+npm test          # tests unitarios
+npm run build     # build de producción
+npm run lint      # linter
 ```
