@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables
+.env
+.env.*
+
+# Tool config (Claude Code, Superpowers)
+.claude/
+.superpowers/
