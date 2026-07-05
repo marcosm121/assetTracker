@@ -7,6 +7,8 @@ import type {
   DollarRates,
   VariationPeriod,
   NewsItem,
+  PricePoint,
+  ChartRange,
 } from './types'
 
 const DOLLAR_KEYS = new Set(['oficial', 'blue', 'bolsa', 'contadoconliqui'])
@@ -84,6 +86,16 @@ export class InvestorDataAdapter implements DataProvider {
   getDollarRates(): DollarRates { return this.dollarRates }
   getHistoryDollarRates(period: VariationPeriod): DollarRates { return this.historyDollar[period] }
   isReady(): boolean { return this.ready }
+
+  /**
+   * Fetches the daily price series for a single ticker (`GET /history/:symbol`).
+   * Unlike the cached bulk data, this is an on-demand request per detail view.
+   * The backend guarantees consecutive calendar days (no gaps); missing
+   * snapshots come back as `{ ars: null, usd: null }`.
+   */
+  async fetchHistorySeries(symbol: string, days: ChartRange): Promise<PricePoint[]> {
+    return this.get<PricePoint[]>(`/history/${encodeURIComponent(symbol)}?days=${days}`)
+  }
 
   async fetchNews(): Promise<void> {
     if (this.news.length > 0) return

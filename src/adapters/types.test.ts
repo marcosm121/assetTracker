@@ -13,6 +13,7 @@ describe('DataProvider interface', () => {
       getWatchlist: () => ['GGAL'],
       getDollarRates: (): DollarRates => ({ oficial: 1180, blue: 1350, bolsa: 1290, contadoconliqui: 1310 }),
       getHistoryDollarRates: (): DollarRates => ({ oficial: 1100, blue: null, bolsa: null, contadoconliqui: null }),
+      fetchHistorySeries: async () => [{ date: '2026-01-01', ars: 1200, usd: 0.93 }],
       addTicker: async (_s: string) => {},
       removeTicker: async (_s: string) => {},
       isReady: () => true,
