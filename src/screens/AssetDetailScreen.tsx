@@ -5,6 +5,7 @@ import { usePreferencesStore } from '../stores/preferencesStore'
 import { calcVariation } from '../utils/variation'
 import { getCompanyName } from '../utils/companyNames'
 import VariationBadge from '../components/VariationBadge'
+import AssetChart from '../components/AssetChart'
 import type { VariationPeriod } from '../adapters/types'
 
 const PERIOD_LABELS: Record<VariationPeriod, string> = {
@@ -97,6 +98,9 @@ export default function AssetDetailScreen() {
             </div>
           )}
         </div>
+
+        {/* Gráfico de evolución */}
+        <AssetChart symbol={symbol} currency={currency} />
 
         {/* Historial */}
         {current && (

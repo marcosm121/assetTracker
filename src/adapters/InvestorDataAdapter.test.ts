@@ -350,6 +350,38 @@ describe('InvestorDataAdapter', () => {
     })
   })
 
+  describe('fetchHistorySeries', () => {
+    const SERIES = [
+      { date: '2026-06-01', ars: 1200.0, usd: 0.93 },
+      { date: '2026-06-02', ars: null, usd: null },
+      { date: '2026-06-03', ars: 1250.5, usd: 0.95 },
+    ]
+
+    it('GETs /history/:symbol with the days query param', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({ ok: true, json: async () => SERIES } as Response)
+      const series = await adapter.fetchHistorySeries('GGAL', 30)
+      expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/history/GGAL?days=30`)
+      expect(series).toEqual(SERIES)
+    })
+
+    it('preserves null days as gaps in the series', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({ ok: true, json: async () => SERIES } as Response)
+      const series = await adapter.fetchHistorySeries('GGAL', 7)
+      expect(series[1]).toEqual({ date: '2026-06-02', ars: null, usd: null })
+    })
+
+    it('url-encodes the symbol', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({ ok: true, json: async () => [] } as Response)
+      await adapter.fetchHistorySeries('BRK B', 90)
+      expect(fetch).toHaveBeenCalledWith(`${BASE_URL}/history/BRK%20B?days=90`)
+    })
+
+    it('throws on non-ok response', async () => {
+      vi.mocked(fetch).mockResolvedValueOnce({ ok: false, status: 500 } as Response)
+      await expect(adapter.fetchHistorySeries('GGAL', 30)).rejects.toThrow('500')
+    })
+  })
+
   describe('getOneDayHistoryDaysAgo', () => {
     function makeDate(utcHour: number, utcMinute = 0): Date {
       const d = new Date(0)
